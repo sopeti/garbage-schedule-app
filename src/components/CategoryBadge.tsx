@@ -29,10 +29,20 @@ export const CATEGORY_COLORS: Record<GarbageCategory, { bg: string; text: string
   spray_cans:        { bg: '#fff1f2', text: '#be123c', accent: '#fb7185' },
 }
 
-export function CategoryBadge({ category, size }: { category: GarbageCategory; size: 'sm' | 'lg' }) {
+export function CategoryBadge({ category, size }: { category: GarbageCategory; size: 'sm' | 'lg' | 'xs' }) {
   const { t } = useLanguage()
   const { bg, text, accent } = CATEGORY_COLORS[category]
   const emoji = EMOJI[category]
+
+  if (size === 'xs') {
+    return (
+      <View style={[styles.xs, { backgroundColor: bg, borderColor: accent + '99' }]}>
+        <Text style={styles.xsEmoji}>{emoji}</Text>
+        <Text style={[styles.xsLabel, { color: text }]}>{t.categoriesShort[category]}</Text>
+      </View>
+    )
+  }
+
   const label = t.categories[category]
 
   if (size === 'lg') {
@@ -53,6 +63,18 @@ export function CategoryBadge({ category, size }: { category: GarbageCategory; s
 }
 
 const styles = StyleSheet.create({
+  xs: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  xsEmoji: { fontSize: 11 },
+  xsLabel: { fontSize: 11, fontWeight: '700' },
+
   sm: {
     flexDirection: 'row',
     alignItems: 'center',

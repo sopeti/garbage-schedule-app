@@ -38,6 +38,7 @@ export type Translations = {
   selectArea: string
   getStarted: string
   categories: Record<GarbageCategory, string>
+  categoriesShort: Record<GarbageCategory, string>
   notifEveningTitle: (label: string) => string
   notifEveningBody: (emoji: string) => string
   notifMorningTitle: (label: string) => string
@@ -91,6 +92,18 @@ const ja: Translations = {
     small_electronics: '小型家電',
     spray_cans:        'スプレー缶',
   },
+  categoriesShort: {
+    burnable:          '燃ごみ',
+    non_burnable:      '不燃',
+    plastic:           'プラ',
+    cans:              '缶',
+    bottles_glass:     'びん',
+    cardboard:         '段ボール',
+    paper:             '新聞',
+    bulky:             '粗大',
+    small_electronics: '小型家電',
+    spray_cans:        'スプレー',
+  },
   notifEveningTitle: (label) => `明日は${label}の日`,
   notifEveningBody:  (emoji) => `${emoji} 明日の朝8時までにお出しください`,
   notifMorningTitle: (label) => `今日は${label}の日`,
@@ -142,6 +155,18 @@ const en: Translations = {
     paper:             'Paper',
     bulky:             'Bulky Items',
     small_electronics: 'Small Electronics',
+    spray_cans:        'Spray Cans',
+  },
+  categoriesShort: {
+    burnable:          'Burnable',
+    non_burnable:      'Non-burnable',
+    plastic:           'Plastic',
+    cans:              'Cans',
+    bottles_glass:     'Glass',
+    cardboard:         'Cardboard',
+    paper:             'Paper',
+    bulky:             'Bulky',
+    small_electronics: 'Small Appliances',
     spray_cans:        'Spray Cans',
   },
   notifEveningTitle: (label) => `Tomorrow: ${label}`,

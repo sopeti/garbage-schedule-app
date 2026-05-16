@@ -94,16 +94,19 @@ function FadeInView({ children, delay = 0 }: { children: React.ReactNode; delay?
   return <Animated.View style={{ opacity, transform: [{ translateY }] }}>{children}</Animated.View>
 }
 
-function CollectionCard({ category, putOutBy8, accent }: {
+function CollectionCard({ category, accent, compact }: {
   category: GarbageCategory
-  putOutBy8: string
   accent: boolean
+  compact?: boolean
 }) {
   const { bg, accent: accentColor } = CATEGORY_COLORS[category]
   return (
-    <View style={[styles.collectionCard, { backgroundColor: accent ? bg : '#fafafa', borderLeftColor: accentColor }]}>
-      <CategoryBadge category={category} size="lg" />
-      <Text style={styles.pickupTime}>{putOutBy8}</Text>
+    <View style={[
+      styles.collectionCard,
+      { backgroundColor: accent ? bg : '#fafafa', borderLeftColor: accentColor },
+      compact && styles.collectionCardCompact,
+    ]}>
+      <CategoryBadge category={category} size={compact ? 'sm' : 'lg'} />
     </View>
   )
 }
@@ -121,6 +124,7 @@ function DaySection({ label, date, municipalityCode, areaId, accent, putOutBy8, 
   const { lang, t } = useLanguage()
   const events = getCollectionsForDate(municipalityCode, areaId, date)
   const dateStr = formatDateLabel(date, lang, t.weekdays, t.months)
+  const compact = events.length >= 3
 
   return (
     <FadeInView delay={delay}>
@@ -132,7 +136,10 @@ function DaySection({ label, date, municipalityCode, areaId, accent, putOutBy8, 
               {label}
             </Text>
           </View>
-          <Text style={styles.sectionDate}>{dateStr}</Text>
+          <View style={styles.sectionHeaderRight}>
+            {compact && events.length > 0 && <Text style={styles.pickupTimeHeader}>{putOutBy8}</Text>}
+            <Text style={styles.sectionDate}>{dateStr}</Text>
+          </View>
         </View>
         {events.length === 0 ? (
           <View style={styles.emptyCard}>
@@ -140,13 +147,13 @@ function DaySection({ label, date, municipalityCode, areaId, accent, putOutBy8, 
             <Text style={styles.emptyText}>{t.noCollection}</Text>
           </View>
         ) : (
-          <View style={styles.cardGrid}>
+          <View style={events.length >= 3 ? styles.cardGridCompact : styles.cardGrid}>
             {events.map(e => (
               <CollectionCard
                 key={e.category}
                 category={e.category as GarbageCategory}
-                putOutBy8={putOutBy8}
                 accent={accent}
+                compact={events.length >= 3}
               />
             ))}
           </View>
@@ -228,7 +235,7 @@ export default function HomeScreen() {
             <Text style={styles.noneText}>—</Text>
           ) : (
             events.map(e => (
-              <CategoryBadge key={e.category} category={e.category as GarbageCategory} size="sm" />
+              <CategoryBadge key={e.category} category={e.category as GarbageCategory} size="xs" />
             ))
           )}
         </View>
@@ -328,6 +335,9 @@ const styles = StyleSheet.create({
   emptyText: { color: '#cbd5e1', fontSize: 14, fontWeight: '500' },
 
   cardGrid: { gap: 12 },
+  cardGridCompact: {
+    flexDirection: 'row', flexWrap: 'wrap', gap: 8,
+  },
   collectionCard: {
     borderRadius: 18, padding: 18, paddingLeft: 16,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
@@ -335,6 +345,12 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
+  collectionCardCompact: {
+    padding: 12, paddingLeft: 12, borderRadius: 14, borderLeftWidth: 3,
+    flexBasis: '48%', flexGrow: 1,
+  },
+  sectionHeaderRight: { alignItems: 'flex-end', gap: 2 },
+  pickupTimeHeader: { fontSize: 11, color: '#94a3b8', fontWeight: '600', letterSpacing: 0.3 },
   pickupTime: { fontSize: 11, color: '#94a3b8', fontWeight: '600', letterSpacing: 0.3 },
 
   comingUpLabel: {
