@@ -237,7 +237,7 @@ export default function SettingsScreen() {
                     style={[styles.row, i > 0 && styles.rowDivider, active && styles.rowActive]}
                     onPress={() => setSelectedArea(area.id)}
                   >
-                    <Text style={[styles.rowText, active && styles.rowTextActive]} numberOfLines={2}>
+                    <Text style={[styles.rowText, active && styles.rowTextActive]}>
                       {lang === 'en' ? (area.nameRoman ?? area.name) : area.name}
                     </Text>
                     {active && <Text style={styles.check}>✓</Text>}
@@ -404,12 +404,12 @@ const styles = StyleSheet.create({
 
   // Card list
   card: { backgroundColor: C.card, borderRadius: RADIUS.card, overflow: 'hidden', ...SHADOW },
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 18 },
+  row: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 15, paddingHorizontal: 18 },
   rowDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   rowActive: { backgroundColor: C.greenT },
   rowText: { flex: 1, fontSize: 15, color: C.text, fontWeight: '500' },
   rowTextActive: { color: C.green, fontWeight: '700' },
-  check: { fontSize: 15, color: C.green, fontWeight: '800', marginLeft: 8 },
+  check: { fontSize: 15, color: C.green, fontWeight: '800', marginLeft: 8, marginTop: 2 },
 
   // Buttons
   btn: {
