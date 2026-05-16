@@ -3,11 +3,13 @@
 
 import { Municipality } from '@/types/schedule'
 import edogawa from './jp/tokyo/13123'
+import koto from './jp/tokyo/13108'
 
 const registry: Record<string, Municipality> = {
   '13123': edogawa,
-  // '13108': koto,    // Koto Ward — Stage 2
+  '13108': koto,
   // '13101': chiyoda, // Chiyoda Ward — Stage 2
+  // '13101': chiyoda, // Chiyoda Ward — Stage 3
   // '27100': osaka,   // Osaka City — Stage 3
 }
 
