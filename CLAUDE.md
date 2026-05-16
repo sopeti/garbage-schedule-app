@@ -75,4 +75,6 @@ Language support is Japanese (`ja`) and English (`en`).
 3. Register a scraper in `pipeline/src/run.ts` (`SCRAPERS` and `PARSER_META` maps) if pipeline generation is needed.
 
 ### Known data issues
-- Area `13123-E` (一之江1〜5丁目) has `plastic` day marked `notes: '要確認'` — the Monday assignment needs field verification.
+None outstanding. All 5 zones verified as of 2026-05-16:
+- `13123-E` plastic confirmed Monday (user field verification)
+- `paper` added to zones A–D on same day as cardboard (confirmed via official Edogawa-ku schedule: all resources share one weekly collection day per zone)
