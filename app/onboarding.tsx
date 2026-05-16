@@ -77,7 +77,7 @@ export default function OnboardingScreen() {
                   style={[styles.option, selectedArea === area.id && styles.optionSelected]}
                   onPress={() => { hapticLight(); setSelectedArea(area.id) }}
                 >
-                  <Text style={[styles.optionText, selectedArea === area.id && styles.optionTextSelected]} numberOfLines={2}>
+                  <Text style={[styles.optionText, selectedArea === area.id && styles.optionTextSelected]}>
                     {lang === 'en' ? (area.nameRoman ?? area.name) : area.name}
                   </Text>
                   {selectedArea === area.id && <Text style={styles.check}>✓</Text>}
@@ -121,11 +121,11 @@ const styles = StyleSheet.create({
   sub: { fontSize: 15, color: '#666', lineHeight: 22, marginBottom: 32 },
   sectionLabel: { fontSize: 12, fontWeight: '600', color: '#888', marginBottom: 8, marginTop: 20, textTransform: 'uppercase', letterSpacing: 0.5 },
   optionGroup: { borderRadius: 14, overflow: 'hidden', backgroundColor: '#fff', shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 1 },
-  option: { flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#eee' },
+  option: { flexDirection: 'row', alignItems: 'flex-start', padding: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#eee' },
   optionSelected: { backgroundColor: '#f0faf2' },
   optionText: { flex: 1, fontSize: 15, color: '#1a1a1a' },
   optionTextSelected: { color: '#4a9e5c', fontWeight: '600' },
-  check: { color: '#4a9e5c', fontWeight: '700', fontSize: 16 },
+  check: { color: '#4a9e5c', fontWeight: '700', fontSize: 16, marginTop: 1 },
   startBtn: { marginTop: 36, backgroundColor: '#4a9e5c', borderRadius: 14, padding: 20, alignItems: 'center' },
   startBtnDisabled: { backgroundColor: '#b2d8b9' },
   startBtnText: { color: '#fff', fontSize: 17, fontWeight: '800' },
