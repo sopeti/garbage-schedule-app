@@ -73,8 +73,29 @@ Language support is Japanese (`ja`) and English (`en`).
 1. Write (or generate via pipeline) a `Municipality` TS file in `src/data/municipalities/jp/<prefecture>/<code>.ts`.
 2. Import it and add it to `registry` in `src/data/municipalities/index.ts`.
 3. Register a scraper in `pipeline/src/run.ts` (`SCRAPERS` and `PARSER_META` maps) if pipeline generation is needed.
+4. Sort areas alphabetically by neighbourhood reading (あいうえお order). For areas sharing the same neighbourhood name, sort by chome number ascending (e.g. 大島1–2 → 大島3–7 → 大島8–9).
+5. Romanisation: use `O` not `Oh` for the long-O sound (大 etc.). e.g. `Ojima` not `Ohjima`.
+
+### Ward coverage status
+| Code  | Ward     | Areas | Coverage |
+|-------|----------|-------|----------|
+| 13123 | 江戸川区 | 5 (A–E) | Partial — 一之江・葛西・南葛西・小松川・平井・篠崎・江戸川・西葛西・中葛西 only. ~25 additional zones (小岩・松江・瑞江・二之江・清新町 etc.) pending. |
+| 13108 | 江東区   | 12    | Complete — all official district numbers 1–12 verified against FY2026 PDF. |
+
+### UX design decision — area selection
+Current flow: **Ward → Schedule Zone** (2 taps). Works for 2-ward launch.
+Deferred: switch to **City → Ward → Chome** (standard Japanese address flow) before adding a 3rd or 4th ward. Requires a per-municipality chome→zone lookup table (~50 entries for Edogawa, ~100+ for Koto).
+
+### App Store / EAS status (as of 2026-05-16)
+- EAS project linked: `projectId` in `app.json`, owner `sopeti`
+- `eas.json` submit: `appleId` set; `ascAppId` + `appleTeamId` pending Apple Developer account activation (~48h)
+- Privacy policy: `https://sopeti.github.io/garbage-schedule-app/privacy-policy.html`
+- GitHub: `https://github.com/sopeti/garbage-schedule-app`
+- App icon: `assets/icon.png` (1024×1024 PNG from `assets/icon.svg`)
+- Next steps once Apple activates: get Team ID (developer.apple.com → Membership), create app in App Store Connect for `ascAppId`, fill both into `eas.json`, then run `npx eas-cli build --platform ios --profile production`
 
 ### Known data issues
-None outstanding. All 5 zones verified as of 2026-05-16:
+None outstanding. All areas verified as of 2026-05-16:
 - `13123-E` plastic confirmed Monday (user field verification)
-- `paper` added to zones A–D on same day as cardboard (confirmed via official Edogawa-ku schedule: all resources share one weekly collection day per zone)
+- `paper` added to Edogawa zones A–D (same day as cardboard — official schedule confirms all resources share one weekly day per zone)
+- Koto area 6: corrected 潮見→東雲 (Shinonome, not Shiomi)
