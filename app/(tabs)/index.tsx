@@ -1,5 +1,8 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
-import { View, Text, FlatList, StyleSheet, ListRenderItemInfo } from 'react-native'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
+import {
+  View, Text, FlatList, StyleSheet, ListRenderItemInfo,
+  RefreshControl, Animated,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useLocation } from '@/hooks/useLocation'
@@ -43,6 +46,54 @@ function buildCalendarItems(days: Date[], lang: string, weekdays: string[], mont
   return items
 }
 
+function SkeletonBlock({ width, height, style }: { width: number | string; height: number; style?: object }) {
+  const pulse = useRef(new Animated.Value(0.4)).current
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0.4, duration: 800, useNativeDriver: true }),
+      ])
+    ).start()
+  }, [pulse])
+  return (
+    <Animated.View
+      style={[{ width, height, borderRadius: 8, backgroundColor: '#e2e8e2', opacity: pulse }, style]}
+    />
+  )
+}
+
+function SkeletonScreen() {
+  return (
+    <View style={styles.skeletonContainer}>
+      <SkeletonBlock width={120} height={12} style={{ marginBottom: 6 }} />
+      <SkeletonBlock width={200} height={22} style={{ marginBottom: 32 }} />
+      <SkeletonBlock width={60} height={10} style={{ marginBottom: 14 }} />
+      <View style={styles.skeletonCard}>
+        <SkeletonBlock width="60%" height={18} style={{ marginBottom: 12 }} />
+        <SkeletonBlock width="100%" height={64} style={{ borderRadius: 14 }} />
+      </View>
+      <SkeletonBlock width={60} height={10} style={{ marginBottom: 14, marginTop: 28 }} />
+      <View style={styles.skeletonCard}>
+        <SkeletonBlock width="60%" height={18} style={{ marginBottom: 12 }} />
+        <SkeletonBlock width="100%" height={64} style={{ borderRadius: 14 }} />
+      </View>
+    </View>
+  )
+}
+
+function FadeInView({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const opacity = useRef(new Animated.Value(0)).current
+  const translateY = useRef(new Animated.Value(12)).current
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 350, delay, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 350, delay, useNativeDriver: true }),
+    ]).start()
+  }, [opacity, translateY, delay])
+  return <Animated.View style={{ opacity, transform: [{ translateY }] }}>{children}</Animated.View>
+}
+
 function CollectionCard({ category, putOutBy8, accent }: {
   category: GarbageCategory
   putOutBy8: string
@@ -57,7 +108,7 @@ function CollectionCard({ category, putOutBy8, accent }: {
   )
 }
 
-function DaySection({ label, date, municipalityCode, areaId, accent, putOutBy8, isPast }: {
+function DaySection({ label, date, municipalityCode, areaId, accent, putOutBy8, isPast, delay }: {
   label: string
   date: Date
   municipalityCode: string
@@ -65,40 +116,43 @@ function DaySection({ label, date, municipalityCode, areaId, accent, putOutBy8, 
   accent: boolean
   putOutBy8: string
   isPast?: boolean
+  delay?: number
 }) {
   const { lang, t } = useLanguage()
   const events = getCollectionsForDate(municipalityCode, areaId, date)
   const dateStr = formatDateLabel(date, lang, t.weekdays, t.months)
 
   return (
-    <View style={[styles.section, isPast && styles.sectionPast]}>
-      <View style={styles.sectionHeader}>
-        <View style={styles.sectionTitleRow}>
-          {accent && <View style={styles.sectionAccentDot} />}
-          <Text style={[styles.sectionLabel, accent ? styles.sectionLabelAccent : styles.sectionLabelMuted]}>
-            {label}
-          </Text>
+    <FadeInView delay={delay}>
+      <View style={[styles.section, isPast && styles.sectionPast]}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleRow}>
+            {accent && <View style={styles.sectionAccentDot} />}
+            <Text style={[styles.sectionLabel, accent ? styles.sectionLabelAccent : styles.sectionLabelMuted]}>
+              {label}
+            </Text>
+          </View>
+          <Text style={styles.sectionDate}>{dateStr}</Text>
         </View>
-        <Text style={styles.sectionDate}>{dateStr}</Text>
+        {events.length === 0 ? (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyEmoji}>✨</Text>
+            <Text style={styles.emptyText}>{t.noCollection}</Text>
+          </View>
+        ) : (
+          <View style={styles.cardGrid}>
+            {events.map(e => (
+              <CollectionCard
+                key={e.category}
+                category={e.category as GarbageCategory}
+                putOutBy8={putOutBy8}
+                accent={accent}
+              />
+            ))}
+          </View>
+        )}
       </View>
-      {events.length === 0 ? (
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyEmoji}>✨</Text>
-          <Text style={styles.emptyText}>{t.noCollection}</Text>
-        </View>
-      ) : (
-        <View style={styles.cardGrid}>
-          {events.map(e => (
-            <CollectionCard
-              key={e.category}
-              category={e.category as GarbageCategory}
-              putOutBy8={putOutBy8}
-              accent={accent}
-            />
-          ))}
-        </View>
-      )}
-    </View>
+    </FadeInView>
   )
 }
 
@@ -106,12 +160,14 @@ export default function HomeScreen() {
   const { location, loading } = useLocation()
   const { lang, t } = useLanguage()
   const [daysShown, setDaysShown] = useState(BATCH)
+  const [refreshing, setRefreshing] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const today = useMemo(() => {
     const d = new Date()
     d.setHours(0, 0, 0, 0)
     return d
-  }, [])
+  }, [refreshKey])
 
   useEffect(() => {
     if (!loading && !location) router.replace('/onboarding')
@@ -129,20 +185,23 @@ export default function HomeScreen() {
 
   const loadMore = useCallback(() => setDaysShown(prev => prev + BATCH), [])
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.center}><Text style={styles.loadingText}>{t.loading}</Text></View>
-      </SafeAreaView>
-    )
-  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    setRefreshKey(k => k + 1)
+    setTimeout(() => setRefreshing(false), 600)
+  }, [])
+
+  if (loading) return (
+    <SafeAreaView style={styles.container}>
+      <SkeletonScreen />
+    </SafeAreaView>
+  )
 
   if (!location) return null
 
   const municipality = getMunicipality(location.municipalityCode)
   const area = municipality?.areas.find(a => a.id === location.areaId)
   const todayPast = new Date().getHours() >= 8
-  const nowHour = new Date().getHours()
 
   const locationLine = lang === 'en'
     ? `${municipality?.prefectureEn} · ${municipality?.nameEn}`
@@ -179,10 +238,12 @@ export default function HomeScreen() {
 
   const header = (
     <View>
-      <View style={styles.locationHeader}>
-        <Text style={styles.locationMuni}>{locationLine}</Text>
-        <Text style={styles.locationArea}>{areaLine}</Text>
-      </View>
+      <FadeInView delay={0}>
+        <View style={styles.locationHeader}>
+          <Text style={styles.locationMuni}>{locationLine}</Text>
+          <Text style={styles.locationArea}>{areaLine}</Text>
+        </View>
+      </FadeInView>
 
       <DaySection
         label={t.today}
@@ -192,6 +253,7 @@ export default function HomeScreen() {
         accent={true}
         putOutBy8={t.putOutBy8}
         isPast={todayPast}
+        delay={80}
       />
 
       <DaySection
@@ -201,9 +263,12 @@ export default function HomeScreen() {
         areaId={location.areaId}
         accent={false}
         putOutBy8={t.putOutBy8}
+        delay={160}
       />
 
-      <Text style={styles.comingUpLabel}>{lang === 'ja' ? '今後' : 'COMING UP'}</Text>
+      <FadeInView delay={220}>
+        <Text style={styles.comingUpLabel}>{lang === 'ja' ? '今後' : 'COMING UP'}</Text>
+      </FadeInView>
     </View>
   )
 
@@ -219,6 +284,14 @@ export default function HomeScreen() {
         onEndReachedThreshold={0.4}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#4a9e5c"
+            colors={['#4a9e5c']}
+          />
+        }
       />
     </SafeAreaView>
   )
@@ -227,8 +300,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f7f8f7' },
   list: { paddingHorizontal: 20, paddingTop: 4, paddingBottom: 48 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  loadingText: { color: '#aaa', fontSize: 15 },
+
+  skeletonContainer: { padding: 20, paddingTop: 12 },
+  skeletonCard: { backgroundColor: '#fff', borderRadius: 18, padding: 18 },
 
   locationHeader: { marginBottom: 28, marginTop: 8 },
   locationMuni: { fontSize: 12, color: '#3aa55c', fontWeight: '700', letterSpacing: 0.4, textTransform: 'uppercase', marginBottom: 3 },

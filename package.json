@@ -13,6 +13,7 @@
     "@react-native-community/datetimepicker": "8.4.4",
     "expo": "~54.0.33",
     "expo-constants": "~18.0.13",
+    "expo-haptics": "^55.0.14",
     "expo-linking": "~8.0.12",
     "expo-notifications": "~0.32.17",
     "expo-router": "~6.0.23",

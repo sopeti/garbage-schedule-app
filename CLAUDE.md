@@ -39,7 +39,15 @@ The pipeline requires `ANTHROPIC_API_KEY` in the environment.
 6. **`src/hooks/useLocation.ts`** composes storage + notification scheduling into a single hook used by all screens.
 
 ### Routing
-`expo-router` file-based. Entry point is `app/_layout.tsx` (Stack). Tabs live under `app/(tabs)/` (今日/index, 今後/schedule, 設定/settings). `app/onboarding.tsx` is a modal presented when no location is stored.
+`expo-router` file-based. Entry point is `app/_layout.tsx` (Stack). Tabs live under `app/(tabs)/` — two tabs only: `index` (Schedule) and `settings` (Settings/設定). A third tab was considered and deliberately dropped; the home screen already shows today, tomorrow, and an infinite-scroll upcoming calendar inline. `app/onboarding.tsx` is a modal presented when no location is stored.
+
+### UI conventions
+- Tab bar labels are language-aware via `useLanguage()` in `app/(tabs)/_layout.tsx`. The home tab is always labelled "Schedule" in both languages; the settings tab uses `t.locationSettings` ('設定' / 'Settings').
+- All UI strings live in `src/i18n/translations.ts`. Do not hardcode user-visible English or Japanese strings elsewhere.
+- Entrance animations use RN's built-in `Animated` API (not reanimated) — `FadeInView` in `index.tsx` handles staggered fade+slide. Keep new animated components consistent with this pattern.
+- Haptic feedback (`expo-haptics`) is used on interactive selections in `onboarding.tsx`. Always guard with `Platform.OS !== 'web'` before calling Haptics — it is a no-op on web.
+- The home screen supports pull-to-refresh via `RefreshControl` on the `FlatList`. The refresh increments `refreshKey` to recompute today's date.
+- Loading state on the home screen shows a pulsing `SkeletonScreen` instead of plain text.
 
 ### `ScheduleRule` types
 ```

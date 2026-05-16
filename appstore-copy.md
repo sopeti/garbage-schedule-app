@@ -35,7 +35,7 @@ Select your neighborhood and instantly see every collection schedule — burnabl
 Features:
 • Today's and tomorrow's pickups at a glance
 • Monthly calendar for upcoming collections
-• Reminders the evening before and morning of collection, at times you choose
+• Reminders the evening before and collection day morning, at times you choose
 • Japanese and English interface
 • No account required. All data stays on your device.
 

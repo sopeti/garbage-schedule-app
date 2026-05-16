@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router'
 import { Text } from 'react-native'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function TabsLayout() {
+  const { lang, t } = useLanguage()
   return (
     <Tabs
       screenOptions={{
@@ -14,14 +16,14 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'ゴミ出し',
+          title: 'Schedule',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🗓</Text>,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: '設定',
+          title: t.locationSettings,
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>⚙️</Text>,
         }}
       />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { getAllMunicipalities } from '@/data/municipalities'
@@ -8,6 +8,11 @@ import { requestPermissions } from '@/services/notificationService'
 import { UserLocation } from '@/types/schedule'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Language } from '@/i18n/translations'
+import * as Haptics from 'expo-haptics'
+
+function hapticLight() {
+  if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+}
 
 export default function OnboardingScreen() {
   const { setLocation } = useLocation()
@@ -52,7 +57,7 @@ export default function OnboardingScreen() {
             <Pressable
               key={m.code}
               style={[styles.option, selectedMuni === m.code && styles.optionSelected]}
-              onPress={() => { setSelectedMuni(m.code); setSelectedArea('') }}
+              onPress={() => { hapticLight(); setSelectedMuni(m.code); setSelectedArea('') }}
             >
               <Text style={[styles.optionText, selectedMuni === m.code && styles.optionTextSelected]}>
                 {lang === 'en' ? `${m.prefectureEn} · ${m.nameEn}` : `${m.prefecture}　${m.name}`}
@@ -70,7 +75,7 @@ export default function OnboardingScreen() {
                 <Pressable
                   key={area.id}
                   style={[styles.option, selectedArea === area.id && styles.optionSelected]}
-                  onPress={() => setSelectedArea(area.id)}
+                  onPress={() => { hapticLight(); setSelectedArea(area.id) }}
                 >
                   <Text style={[styles.optionText, selectedArea === area.id && styles.optionTextSelected]} numberOfLines={2}>
                     {lang === 'en' ? (area.nameRoman ?? area.name) : area.name}
@@ -87,7 +92,7 @@ export default function OnboardingScreen() {
           onPress={handleStart}
           disabled={!selectedMuni || !selectedArea}
         >
-          <Text style={styles.startBtnText}>{t.getStarted}</Text>
+          <Text style={styles.startBtnText}>{t.saveAddress}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
