@@ -36,7 +36,7 @@ const koto: Municipality = {
       // 石島 (い)
       id: '13108-11',
       name: '石島・海辺・扇橋・白河4丁目・猿江・千石・千田・平野4丁目・三好4丁目・森下5丁目',
-      nameRoman: 'Ishijima, Umibe, Ohgibashi, Shirakawa 4, Sarue, Sengoku, Senda, Hirano 4, Miyoshi 4, Morishita 5',
+      nameRoman: 'Ishijima, Umibe, Ogibashi, Shirakawa 4, Sarue, Sengoku, Senda, Hirano 4, Miyoshi 4, Morishita 5',
       schedule: {
         burnable:      { rule: { type: 'weekly', days: ['wednesday', 'saturday'] },       pickupStart: '08:00' },
         non_burnable:  { rule: { type: 'biweekly', day: 'friday', startWeek: 'odd' },    pickupStart: '08:00' },
@@ -84,7 +84,7 @@ const koto: Municipality = {
       // 大島1〜2丁目 (おおじま — chome 1)
       id: '13108-8',
       name: '大島1・2丁目・亀戸1〜3丁目・住吉・毛利',
-      nameRoman: 'Ohjima 1-2, Kameido 1-3, Sumiyoshi, Mori',
+      nameRoman: 'Ojima 1-2, Kameido 1-3, Sumiyoshi, Mori',
       schedule: {
         burnable:      { rule: { type: 'weekly', days: ['wednesday', 'saturday'] },       pickupStart: '08:00' },
         non_burnable:  { rule: { type: 'biweekly', day: 'tuesday', startWeek: 'even' },  pickupStart: '08:00' },
@@ -100,7 +100,7 @@ const koto: Municipality = {
       // 大島3〜7丁目 (おおじま — chome 3)
       id: '13108-10',
       name: '大島3〜7丁目',
-      nameRoman: 'Ohjima 3-7',
+      nameRoman: 'Ojima 3-7',
       schedule: {
         burnable:      { rule: { type: 'weekly', days: ['tuesday', 'friday'] },           pickupStart: '08:00' },
         non_burnable:  { rule: { type: 'biweekly', day: 'thursday', startWeek: 'odd' },  pickupStart: '08:00' },
@@ -116,7 +116,7 @@ const koto: Municipality = {
       // 大島8〜9丁目 (おおじま — chome 8)
       id: '13108-4',
       name: '大島8・9丁目・北砂6・7丁目・東砂1〜5丁目',
-      nameRoman: 'Ohjima 8-9, Kitasuna 6-7, Higashisuna 1-5',
+      nameRoman: 'Ojima 8-9, Kitasuna 6-7, Higashisuna 1-5',
       schedule: {
         burnable:      { rule: { type: 'weekly', days: ['tuesday', 'friday'] },           pickupStart: '08:00' },
         non_burnable:  { rule: { type: 'biweekly', day: 'thursday', startWeek: 'even' }, pickupStart: '08:00' },
