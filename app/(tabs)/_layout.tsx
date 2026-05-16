@@ -16,7 +16,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Schedule',
+          title: lang === 'ja' ? 'ごみカレンダー' : 'Schedule',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🗓</Text>,
         }}
       />
